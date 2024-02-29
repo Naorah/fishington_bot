@@ -77,9 +77,9 @@ The main loop is :
 1. Sell
 2. Fishing
 - Did we throw the rod X times?
-yes
+- yes
     - go to step 1
-no
+- no
     - go to step 2
 
 ## A question ? Something went wrong ?
