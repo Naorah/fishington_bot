@@ -26,8 +26,8 @@ __version__ = '0.1'
 config = configparser.ConfigParser()
 config.read('config.ini')
 
-PIXEL_DELTA_RIGHT = config['launch.me']['PIXEL_DELTA_RIGHT']
-PIXEL_DELTA_LEFT  = config['launch.me']['PIXEL_DELTA_LEFT']
+PIXEL_DELTA_RIGHT = int(config['launch.me']['PIXEL_DELTA_RIGHT'])
+PIXEL_DELTA_LEFT  = int(config['launch.me']['PIXEL_DELTA_LEFT'])
 USER_POS = eval(config['launch.me']['USER_POS'])
 
 ###############################################
@@ -188,9 +188,10 @@ class CustomBot():
                         "top": y-1,
                         "width": 1,
                         "height": 1,
+                        "depth": "RGB",
                     }
                 )
-            frame = np.array(scr)
+            frame = np.array(scr)[:, :, :3]
             # We have some values recorded of what it should be so just see if that's it ?
             if any(np.array_equal(frame, arr) for arr in exclamation_array):
                 # if yes go next step
