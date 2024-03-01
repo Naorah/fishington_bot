@@ -18,6 +18,33 @@ Here's an example of the robot's capture of a legendary fish.
 
 ![](https://github.com/Naorah/fishington_bot/blob/main/fishing_legendary.gif)
 
+## How it works ?
+
+The aim of the project was to make the robot efficient. To achieve this, the process had to be light, fast and respond to the main problem: never failing to catch a fish.
+
+After some research and testing, several options were available:
+
+- Use image recognition, which would require the user to take different images before starting, or not if he had the same resolution as me.
+
+- More naively, use screen positions to perform the various tasks.
+
+From a technical point of view, the first was interesting, but the second was much more effective, so that anyone could use the robot.
+
+The biggest problem would be the different user devices. Being on a QHD screen, if a user has a 4K screen, it won't work, and if it's 1080, it won't work either. If the user has a 4K screen but only opens the game on half of their second screen, it works even less because the responsive site resizes all the images.
+
+Position retrieval, for example, allows sales operations to be carried out very quickly.
+
+To recognize the exclamation mark, only 1 pixel will be used at the given position, and it will have to take one of the previously retrieved colors, so the operation is fast because only 1 pixel will be compared.
+For fishing, we retrieve the position of the two ends of the bar, from which we take a 1-pixel-high strip to find out:
+
+- whether the strip is red or green
+- The start and end positions of the strip
+- The position of the bobber
+
+All this is done by recognizing the previously recorded colors.
+
+Then we apply the various click or release operations to catch the fish.
+
 ## Setup
 
 1. Install the dependencies :

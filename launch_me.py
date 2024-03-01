@@ -136,7 +136,7 @@ class CustomBot():
         """
         close_window : function : click on the quit_panel position to close any panel
         """
-        self.click_location(self._quit_panel, 0.1)
+        self.click_location(self._quit_panel)
 
     def click_location(self, pos, wait=0.0):
         """
