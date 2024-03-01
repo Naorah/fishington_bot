@@ -120,3 +120,5 @@ The main loop is :
 ## A question ? Something went wrong ?
 
 Don't hesitate, write me on discord : waxirio
+
+Feel free to fork the project and add your own modifications!
