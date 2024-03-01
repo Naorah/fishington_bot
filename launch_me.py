@@ -26,8 +26,7 @@ __version__ = '0.1'
 config = configparser.ConfigParser()
 config.read('config.ini')
 
-PIXEL_DELTA_RIGHT = int(config['launch.me']['PIXEL_DELTA_RIGHT'])
-PIXEL_DELTA_LEFT  = int(config['launch.me']['PIXEL_DELTA_LEFT'])
+PIXEL_DELTA = int(config['launch.me']['pixel_delta'])
 USER_POS = eval(config['launch.me']['USER_POS'])
 
 ###############################################
@@ -105,10 +104,12 @@ class CustomBot():
         - sell everything
         - go down
         """
+        # PARAM FISH/SHOP distance
+        shop_distance = 5
         # We go down
         print('Go to the shop')
         self.keyboard.press(keyboard.Key.up)
-        time.sleep(2)
+        time.sleep(shop_distance)
         self.keyboard.release(keyboard.Key.up)
         # We open the menu
         self.keyboard.press(keyboard.Key.space)
@@ -129,7 +130,7 @@ class CustomBot():
         self.close_window()
         # We return to fishing
         self.keyboard.press(keyboard.Key.down)
-        time.sleep(2)
+        time.sleep(shop_distance)
         self.keyboard.release(keyboard.Key.down)
 
     def close_window(self):
@@ -242,14 +243,18 @@ class CustomBot():
                 red_positions    = [i for i, x in enumerate(frame) if x == self._red]
                 green_positions  = [i for i, x in enumerate(frame) if x == self._green]
 
+                if len(bobber_positions) > 0:
+                    mid_index = len(bobber_positions) // 2
+                    bobber_position = bobber_positions[mid_index]
+
                 # Seek for the bobber
                 if len(bobber_positions) > 0:
                     # If we have a red zone
                     if len(red_positions) > 0:
                         # If the zone is under the bobber, release
-                        if red_positions[0] < bobber_positions[0]:
+                        if red_positions[0] < bobber_position:
                             pyautogui.mouseUp()
-                        elif red_positions[-1] > bobber_positions[0]: # Else we pull
+                        elif red_positions[-1] > bobber_position: # Else we pull
                             pyautogui.mouseDown()
                     # If it's green
                     elif len(green_positions) > 0:
@@ -257,20 +262,20 @@ class CustomBot():
                         # In our strategy, we seek to be as much as possible in the center of the global zone (mid_distance) and in the fishing zone
                         #
                         # If the zone contains the center we try to be at the center
-                        if green_positions[0] < mid_distance and green_positions[-1] > mid_distance:
-                            if bobber_positions[0] < mid_distance:
+                        if green_positions[0] < mid_distance and green_positions[-1] > mid_distance and (mid_distance - green_positions[0]) > PIXEL_DELTA and (green_positions[-1] - mid_distance) > PIXEL_DELTA:
+                            if bobber_position < mid_distance:
                                 pyautogui.mouseDown()
                             else:
                                 pyautogui.mouseUp()
                         # If the zone is below the center we seek to be in the zone AND closest to the center
                         elif green_positions[0] < mid_distance and green_positions[-1] < mid_distance:
-                            if green_positions[-1] - bobber_positions[0] > PIXEL_DELTA_RIGHT:
+                            if green_positions[-1] - bobber_position > PIXEL_DELTA:
                                 pyautogui.mouseDown()
                             else:
                                 pyautogui.mouseUp()
                         # If the zone is above the center we seek to be in the zone AND closest to the center
                         elif green_positions[0] > mid_distance and green_positions[-1] > mid_distance:
-                            if bobber_positions[0] - green_positions[0] > PIXEL_DELTA_LEFT:
+                            if bobber_position - green_positions[0] > PIXEL_DELTA:
                                 pyautogui.mouseUp()
                             else:
                                 pyautogui.mouseDown()
