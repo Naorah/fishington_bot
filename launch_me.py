@@ -218,6 +218,7 @@ class CustomBot():
         mid_distance = total_distance / 2
         catch = False
         save = False
+        bobber_position = 0
         # While we see bobber, red zone or green zone we are fishing
         while not catch:
             # Catch a picture of the bar with 1px height
@@ -243,6 +244,7 @@ class CustomBot():
                 red_positions    = [i for i, x in enumerate(frame) if x == self._red]
                 green_positions  = [i for i, x in enumerate(frame) if x == self._green]
 
+                # Get bobber's center position
                 if len(bobber_positions) > 0:
                     mid_index = len(bobber_positions) // 2
                     bobber_position = bobber_positions[mid_index]
