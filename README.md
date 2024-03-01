@@ -16,15 +16,15 @@ The robot knows exactly where the bobber is and where to position it to optimize
 
 Here's an example of the robot's capture of a common fish.
 
-![](https://imgur.com/j3SibvS)
+![](https://imgur.com/j3SibvS.gif)
 
 Another with an Epic fish
 
-![](https://imgur.com/5OHLbmF)
+![](https://imgur.com/5OHLbmF.gif)
 
 And a Legendary one
 
-![](https://imgur.com/na2mrwj)
+![](https://imgur.com/na2mrwj.gif)
 
 ## How it works ?
 
