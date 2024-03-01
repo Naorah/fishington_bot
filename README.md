@@ -14,9 +14,17 @@ https://fishington.io/
 
 The robot knows exactly where the bobber is and where to position it to optimize the chances of capture.
 
-Here's an example of the robot's capture of a legendary fish.
+Here's an example of the robot's capture of a common fish.
 
-![](https://github.com/Naorah/fishington_bot/blob/main/fishing_legendary.gif)
+![](https://imgur.com/j3SibvS)
+
+Another with an Epic fish
+
+![](https://imgur.com/5OHLbmF)
+
+And a Legendary one
+
+![](https://imgur.com/na2mrwj)
 
 ## How it works ?
 
@@ -51,6 +59,15 @@ Then we apply the various click or release operations to catch the fish.
 
 ```
 pip install -r requirements.txt
+```
+
+Or install line per line :
+
+```
+pip install pyautogui
+pip install pynput
+pip install mss
+pip install numpy
 ```
 
 ## Files
