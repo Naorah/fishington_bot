@@ -10,6 +10,14 @@ https://fishington.io/
 
 # Bot
 
+## Show
+
+The robot knows exactly where the bobber is and where to position it to optimize the chances of capture.
+
+Here's an example of the robot's capture of a legendary fish.
+
+![](https://github.com/Naorah/fishington_bot/blob/main/fishing_legendary.gif)
+
 ## Setup
 
 1. Install the dependencies :
