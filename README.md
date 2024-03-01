@@ -24,7 +24,7 @@ Another with an Epic fish
 
 And a Legendary one
 
-![](https://imgur.com/Qdx0L5z)
+![](https://imgur.com/Qdx0L5z.gif)
 
 ## How it works ?
 
