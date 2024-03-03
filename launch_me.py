@@ -27,7 +27,8 @@ config = configparser.ConfigParser()
 config.read('config.ini')
 
 PIXEL_DELTA = int(config['launch.me']['pixel_delta'])
-USER_POS = eval(config['launch.me']['USER_POS'])
+USER_POS = eval(config['launch.me']['user_pos'])
+AUTO_RELOAD = config['launch.me']['auto_reload_when_crash']
 
 ###############################################
 #                  BOT CLASS                  #
@@ -72,6 +73,8 @@ class CustomBot():
         self._green = (23, 207, 79)
         self._bobber = (255, 121, 123)
         self._bobber2 = (239, 73, 44)
+        self._error_panel = (23, 29, 30)
+        self._game_crashed = False
         # fish_counter
         self._max_fish = 10
         self._current_fishes = 0
@@ -81,19 +84,38 @@ class CustomBot():
         """
         Run the fishing bot
         """
-        while True:
+        self._init_position()
+        while not self._game_crashed:
             # We sell just in case we still have some stuff
             self.sell_fishes()
             # We wait for fishing, you know
-            while self._current_fishes < self._wanted_fishes:
+            while self._current_fishes < self._wanted_fishes and not self._game_crashed:
+                self.check_game_crashed()
                 # We cast the line
                 self.throw_line()
                 # Wait for the fish to bite
-                self.wait_for_fish()
-                # Fish bites, we catch it, you see
-                self.fish()
-                time.sleep(2)
-                self._current_fishes += 1
+                fish_success = self.wait_for_fish()
+                # if the fish isn't catched it's maybe becacuse the game crashes
+                if not fish_success : 
+                    self.check_game_crashed()
+                else:
+                    # Fish bites, we catch it, you see
+                    self.fish()
+                    time.sleep(2)
+                    self._current_fishes += 1
+
+    def _init_position(self):
+        """
+        Initialize position for selling first
+        """
+        # Go initialize character position on the left position
+        self.keyboard.press(keyboard.Key.left)
+        time.sleep(7)
+        self.keyboard.release(keyboard.Key.left)
+        # Then go under the fish shop
+        self.keyboard.press(keyboard.Key.right)
+        time.sleep(2)
+        self.keyboard.release(keyboard.Key.right)
 
     def sell_fishes(self):
         """
@@ -105,33 +127,82 @@ class CustomBot():
         - go down
         """
         # PARAM FISH/SHOP distance
-        shop_distance = 5
+        shop_distance = 7
         # We go down
         print('Go to the shop')
         self.keyboard.press(keyboard.Key.up)
         time.sleep(shop_distance)
         self.keyboard.release(keyboard.Key.up)
+        self.check_game_crashed()
         # We open the menu
         self.keyboard.press(keyboard.Key.space)
         time.sleep(0.5)
         self.keyboard.release(keyboard.Key.space)
+        self.check_game_crashed()
         # We select all the fishes
         self.click_location(self._select_all_position)
+        self.check_game_crashed()
         time.sleep(0.5)
         # We sell all the fishes
         self.click_location(self._sell_for_position)
+        self.check_game_crashed()
         time.sleep(0.5)
         # We confirm the sale of fishes
         self.click_location(self._sell_position)
+        self.check_game_crashed()
         # We sell the fishes virtually
         self._current_fishes = 0
         time.sleep(0.5)
         # We close the window
         self.close_window()
+        self.check_game_crashed()
         # We return to fishing
         self.keyboard.press(keyboard.Key.down)
         time.sleep(shop_distance)
         self.keyboard.release(keyboard.Key.down)
+        self.check_game_crashed()
+
+    def check_game_crashed(self):
+        """
+        check_game_crashed : function : check if the game has crashed - if yes reload the window and reposition
+        """
+        with mss.mss() as stc:
+            x, y = self._quit_panel
+            scr = stc.grab(
+                {
+                    "left": x-1,
+                    "top": y-1,
+                    "width": 1,
+                    "height": 1,
+                    "depth": "RGB",
+                }
+            )
+        # convert RGB
+        image = Image.frombytes("RGB", scr.size, scr.rgb)
+        # Convert the picture into a tab
+        frame = list(image.getdata())[0]
+        # if the frame is the error frame, reload
+        if frame == self._error_panel:
+            print("GAME CRASHED .... RELOAD")
+            # refresh page
+            self.keyboard.press(keyboard.Key.ctrl)
+            self.keyboard.press('r')
+            time.sleep(0.5)
+            # refresh another time
+            self.keyboard.release(keyboard.Key.ctrl)
+            self.keyboard.release('r')
+            time.sleep(0.5)
+            # validate the refresh
+            self.keyboard.press(keyboard.Key.enter) 
+            self.keyboard.release(keyboard.Key.enter)
+            time.sleep(0.5)
+            self.keyboard.press(keyboard.Key.enter) 
+            self.keyboard.release(keyboard.Key.enter)
+            time.sleep(30)
+            # relaunch everything
+            self._game_crashed = True
+            return True
+        return False
 
     def close_window(self):
         """
@@ -219,6 +290,7 @@ class CustomBot():
         catch = False
         save = False
         bobber_position = 0
+        last_position=0
         # While we see bobber, red zone or green zone we are fishing
         while not catch:
             # Catch a picture of the bar with 1px height
@@ -248,6 +320,10 @@ class CustomBot():
                 if len(bobber_positions) > 0:
                     mid_index = len(bobber_positions) // 2
                     bobber_position = bobber_positions[mid_index]
+                    # If the last position is the same, then the game crashed: check and reload if it show the message
+                    if bobber_position == last_position:
+                        catch = self.check_game_crashed()
+                    last_position = bobber_position
 
                 # Seek for the bobber
                 if len(bobber_positions) > 0:
@@ -323,3 +399,6 @@ if __name__ == "__main__":
     time.sleep(3)
     fisher = CustomBot(mpr._positions)
     fisher.run()
+    while AUTO_RELOAD:
+        fisher = CustomBot(mpr._positions)
+        fisher.run()

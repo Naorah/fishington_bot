@@ -134,6 +134,14 @@ The main loop is :
 - no
     - go to step 2
 
+## Crash fix
+
+A lot of people use the </nospace> symbol on the chat to crash the game.
+
+Since the last update, the bot is able to reboot/refresh the page and refind the right position after spawning to fish, you will be able to keep the bot alive for days ( assuming your internet connexion is never cut )
+
+A new argument is available in the config.ini file to set if you want the bot to stay alive if game crashes or no.
+
 ## A question ? Something went wrong ?
 
 Don't hesitate, write me on discord : waxirio
